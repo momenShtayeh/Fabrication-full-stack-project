@@ -1,0 +1,30 @@
+<section class="result">
+  @if (result().batch; as batch) {
+    <h2 class="title success">
+      <mat-icon>check_circle</mat-icon>
+      <span>
+        Batch <a [routerLink]="['/batches', batch.id]">{{ batch.batchNo }}</a> created with
+        {{ batch.spools.length }} spool(s)
+      </span>
+    </h2>
+    <ul class="spools">
+      @for (spool of batch.spools; track spool.id) {
+        <li><a [routerLink]="['/spools', spool.id]">{{ spool.isoNo }} / {{ spool.spoolNo }}</a></li>
+      }
+    </ul>
+    <p class="muted saved">This report is saved with the batch, open the batch to see it again later.</p>
+  } @else {
+    <h2 class="title neutral">
+      <mat-icon>info</mat-icon>
+      <span>No batch was created, no spool could be batched</span>
+    </h2>
+  }
+
+  @if (result().skippedSpools.length > 0) {
+    <h2 class="title warning">
+      <mat-icon>pending</mat-icon>
+      <span>{{ result().skippedSpools.length }} spool(s) were not batched</span>
+    </h2>
+    <app-skipped-spools [spools]="result().skippedSpools" />
+  }
+</section>

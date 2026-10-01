@@ -1,0 +1,34 @@
+<div class="wrapper">
+  <form class="card" [formGroup]="form" (ngSubmit)="submit()">
+    @if (loading()) {
+      <mat-progress-bar mode="indeterminate" class="progress" />
+    }
+    <div class="brand">
+      <mat-icon>engineering</mat-icon>
+      <h1>Fabrication Planning</h1>
+    </div>
+    <p class="muted">Log in to manage materials, ISOs, spools and batches.</p>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Username</mat-label>
+      <input matInput formControlName="username" autocomplete="username">
+      @if (form.controls.username.hasError('required')) {
+        <mat-error>Username is required</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Password</mat-label>
+      <input matInput type="password" formControlName="password" autocomplete="current-password">
+      @if (form.controls.password.hasError('required')) {
+        <mat-error>Password is required</mat-error>
+      }
+    </mat-form-field>
+
+    @if (error()) {
+      <p class="error" role="alert">{{ error() }}</p>
+    }
+
+    <button mat-flat-button type="submit" [disabled]="loading()">Log in</button>
+  </form>
+</div>

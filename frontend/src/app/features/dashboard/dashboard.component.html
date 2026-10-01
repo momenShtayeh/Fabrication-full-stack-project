@@ -1,0 +1,39 @@
+<div class="page">
+  <div class="page-header">
+    <h1>Dashboard</h1>
+  </div>
+
+  @if (!summary()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+
+  <div class="cards">
+    @for (card of cards(); track card.label) {
+      <a class="card" [class.warning]="card.warning" [routerLink]="card.link" [queryParams]="card.query">
+        <mat-icon>{{ card.icon }}</mat-icon>
+        <span class="value">{{ card.value }}</span>
+        <span class="label">{{ card.label }}</span>
+      </a>
+    }
+  </div>
+
+  <div class="charts">
+    <section class="chart-card">
+      <h2>Spools by status</h2>
+      <div class="chart">
+        @if (statusChart(); as data) {
+          <canvas baseChart type="doughnut" [data]="data" [options]="statusChartOptions"></canvas>
+        }
+      </div>
+    </section>
+
+    <section class="chart-card">
+      <h2>Lowest stock materials</h2>
+      <div class="chart">
+        @if (stockChart(); as data) {
+          <canvas baseChart type="bar" [data]="data" [options]="stockChartOptions"></canvas>
+        }
+      </div>
+    </section>
+  </div>
+</div>

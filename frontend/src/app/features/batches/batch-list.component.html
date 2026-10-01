@@ -1,0 +1,53 @@
+<div class="page">
+  <div class="page-header">
+    <h1>Batches</h1>
+    @if (auth.canEdit()) {
+      <div class="actions">
+        <button mat-flat-button (click)="generate()" [disabled]="generating()">
+          <mat-icon>play_arrow</mat-icon> Generate batch
+        </button>
+      </div>
+    }
+  </div>
+
+  @if (generating()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+  @if (result(); as result) {
+    <app-generation-result [result]="result" />
+  }
+
+  <div class="table-card">
+    @if (list.loading()) {
+      <mat-progress-bar mode="indeterminate" />
+    }
+    <div class="table-scroll">
+      <table mat-table [dataSource]="list.page()?.content ?? []"
+             matSort matSortActive="createdDate" matSortDirection="desc" matSortDisableClear
+             (matSortChange)="list.changeSort($event)">
+        <ng-container matColumnDef="batchNo">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Batch number</th>
+          <td mat-cell *matCellDef="let batch"><strong>{{ batch.batchNo }}</strong></td>
+        </ng-container>
+
+        <ng-container matColumnDef="createdDate">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Created</th>
+          <td mat-cell *matCellDef="let batch">{{ batch.createdDate | date: 'medium' }}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columns"></tr>
+        <tr mat-row *matRowDef="let batch; columns: columns" class="clickable" (click)="open(batch)"></tr>
+      </table>
+    </div>
+
+    @if (list.page()?.totalElements === 0) {
+      <p class="empty-state">No batches generated yet.</p>
+    }
+
+    <mat-paginator [length]="list.page()?.totalElements ?? 0"
+                   [pageIndex]="list.request.page"
+                   [pageSize]="list.request.size"
+                   [pageSizeOptions]="[10, 20, 50]"
+                   (page)="list.changePage($event)" />
+  </div>
+</div>

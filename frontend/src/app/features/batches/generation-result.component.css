@@ -1,0 +1,45 @@
+.result {
+  margin-bottom: 24px;
+  padding: 16px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+
+.title {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.success mat-icon {
+  color: #16a34a;
+}
+
+.neutral mat-icon {
+  color: #64748b;
+}
+
+.warning {
+  margin-top: 20px;
+}
+
+.warning mat-icon {
+  color: #d97706;
+}
+
+.spools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  margin: 0;
+  padding-left: 32px;
+}
+
+.saved {
+  margin: 8px 0 0 32px;
+  font-size: 13px;
+}

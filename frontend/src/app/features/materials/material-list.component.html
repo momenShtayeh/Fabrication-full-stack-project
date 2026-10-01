@@ -1,0 +1,85 @@
+<div class="page">
+  <div class="page-header">
+    <h1>Materials</h1>
+    @if (auth.canEdit()) {
+      <div class="actions">
+        <button mat-flat-button (click)="openCreate()">
+          <mat-icon>add</mat-icon> New material
+        </button>
+      </div>
+    }
+  </div>
+
+  <div class="filters">
+    <mat-form-field appearance="outline">
+      <mat-label>Search by material code</mat-label>
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput [formControl]="search">
+    </mat-form-field>
+  </div>
+
+  <div class="table-card">
+    @if (list.loading()) {
+      <mat-progress-bar mode="indeterminate" />
+    }
+    <div class="table-scroll">
+      <table mat-table [dataSource]="list.page()?.content ?? []"
+             matSort matSortActive="code" matSortDirection="asc" matSortDisableClear
+             (matSortChange)="list.changeSort($event)">
+        <ng-container matColumnDef="code">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Code</th>
+          <td mat-cell *matCellDef="let material"><strong>{{ material.code }}</strong></td>
+        </ng-container>
+
+        <ng-container matColumnDef="description">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
+          <td mat-cell *matCellDef="let material">{{ material.description }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="quantity">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" class="number">Available</th>
+          <td mat-cell *matCellDef="let material" class="number">
+            @if (material.quantity === 0) {
+              <span class="status status-short">Out of stock</span>
+            } @else {
+              {{ material.quantity }}
+            }
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let material" class="actions-cell">
+            <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Material actions">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item (click)="openReceive(material)">
+                <mat-icon>local_shipping</mat-icon> Receive stock
+              </button>
+              <button mat-menu-item (click)="openEdit(material)">
+                <mat-icon>edit</mat-icon> Edit
+              </button>
+              <button mat-menu-item (click)="delete(material)">
+                <mat-icon>delete</mat-icon> Delete
+              </button>
+            </mat-menu>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columns()"></tr>
+        <tr mat-row *matRowDef="let row; columns: columns()"></tr>
+      </table>
+    </div>
+
+    @if (list.page()?.totalElements === 0) {
+      <p class="empty-state">No materials found.</p>
+    }
+
+    <mat-paginator [length]="list.page()?.totalElements ?? 0"
+                   [pageIndex]="list.request.page"
+                   [pageSize]="list.request.size"
+                   [pageSizeOptions]="[10, 20, 50]"
+                   (page)="list.changePage($event)" />
+  </div>
+</div>

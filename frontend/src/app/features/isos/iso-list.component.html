@@ -1,0 +1,76 @@
+<div class="page">
+  <div class="page-header">
+    <h1>ISOs</h1>
+    @if (auth.canEdit()) {
+      <div class="actions">
+        <button mat-flat-button (click)="openCreate()">
+          <mat-icon>add</mat-icon> New ISO
+        </button>
+      </div>
+    }
+  </div>
+
+  <div class="filters">
+    <mat-form-field appearance="outline">
+      <mat-label>Search by ISO number</mat-label>
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput [formControl]="search">
+    </mat-form-field>
+  </div>
+
+  <div class="table-card">
+    @if (list.loading()) {
+      <mat-progress-bar mode="indeterminate" />
+    }
+    <div class="table-scroll">
+      <table mat-table [dataSource]="list.page()?.content ?? []"
+             matSort matSortActive="isoNo" matSortDirection="asc" matSortDisableClear
+             (matSortChange)="list.changeSort($event)">
+        <ng-container matColumnDef="isoNo">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>ISO number</th>
+          <td mat-cell *matCellDef="let iso"><strong>{{ iso.isoNo }}</strong></td>
+        </ng-container>
+
+        <ng-container matColumnDef="revision">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Revision</th>
+          <td mat-cell *matCellDef="let iso">{{ iso.revision }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+          <td mat-cell *matCellDef="let iso"><app-status-badge [status]="iso.status" /></td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let iso" class="actions-cell" (click)="$event.stopPropagation()">
+            <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="ISO actions">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item (click)="openEdit(iso)">
+                <mat-icon>edit</mat-icon> Edit
+              </button>
+              <button mat-menu-item (click)="delete(iso)">
+                <mat-icon>delete</mat-icon> Delete
+              </button>
+            </mat-menu>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columns()"></tr>
+        <tr mat-row *matRowDef="let iso; columns: columns()" class="clickable" (click)="open(iso)"></tr>
+      </table>
+    </div>
+
+    @if (list.page()?.totalElements === 0) {
+      <p class="empty-state">No ISOs found.</p>
+    }
+
+    <mat-paginator [length]="list.page()?.totalElements ?? 0"
+                   [pageIndex]="list.request.page"
+                   [pageSize]="list.request.size"
+                   [pageSizeOptions]="[10, 20, 50]"
+                   (page)="list.changePage($event)" />
+  </div>
+</div>

@@ -1,0 +1,79 @@
+<div class="page">
+  <a class="back-link" routerLink="/batches"><mat-icon>arrow_back</mat-icon> All batches</a>
+
+  @if (batch(); as batch) {
+    <div class="page-header">
+      <h1>{{ batch.batchNo }}</h1>
+      @if (auth.canEdit()) {
+        <div class="actions">
+          <button mat-stroked-button (click)="cancel(batch)"><mat-icon>undo</mat-icon> Cancel batch</button>
+        </div>
+      }
+    </div>
+
+    <dl class="details">
+      <div><dt>Batch number</dt><dd>{{ batch.batchNo }}</dd></div>
+      <div><dt>Created</dt><dd>{{ batch.createdDate | date: 'medium' }}</dd></div>
+      <div><dt>Spools batched</dt><dd>{{ batch.spools.length }}</dd></div>
+      <div><dt>Spools not batched</dt><dd>{{ batch.skippedSpools.length }}</dd></div>
+    </dl>
+
+    <h2>Spools in this batch</h2>
+    <div class="table-card">
+      <div class="table-scroll">
+        <table mat-table [dataSource]="batch.spools">
+          <ng-container matColumnDef="spoolNo">
+            <th mat-header-cell *matHeaderCellDef>Spool number</th>
+            <td mat-cell *matCellDef="let spool"><strong>{{ spool.spoolNo }}</strong></td>
+          </ng-container>
+
+          <ng-container matColumnDef="iso">
+            <th mat-header-cell *matHeaderCellDef>ISO</th>
+            <td mat-cell *matCellDef="let spool">{{ spool.isoNo }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let spool"><app-status-badge [status]="spool.status" /></td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="columns"></tr>
+          <tr mat-row *matRowDef="let spool; columns: columns" class="clickable" (click)="openSpool(spool)"></tr>
+        </table>
+      </div>
+    </div>
+
+    <h2>Materials taken from stock</h2>
+    <div class="table-card">
+      <div class="table-scroll">
+        <table mat-table [dataSource]="batch.materialsUsed">
+          <ng-container matColumnDef="material">
+            <th mat-header-cell *matHeaderCellDef>Material</th>
+            <td mat-cell *matCellDef="let usage"><strong>{{ usage.materialCode }}</strong></td>
+          </ng-container>
+
+          <ng-container matColumnDef="description">
+            <th mat-header-cell *matHeaderCellDef>Description</th>
+            <td mat-cell *matCellDef="let usage">{{ usage.description }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="quantity">
+            <th mat-header-cell *matHeaderCellDef class="number">Quantity</th>
+            <td mat-cell *matCellDef="let usage" class="number">{{ usage.quantity }}</td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="materialColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: materialColumns"></tr>
+        </table>
+      </div>
+    </div>
+
+    <h2>Spools not batched</h2>
+    <p class="muted">As recorded when the batch was generated, with the stock at that moment.</p>
+    <section class="report">
+      <app-skipped-spools [spools]="batch.skippedSpools" />
+    </section>
+  } @else {
+    <mat-progress-bar mode="indeterminate" />
+  }
+</div>

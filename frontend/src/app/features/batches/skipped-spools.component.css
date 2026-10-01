@@ -1,0 +1,56 @@
+.group + .group {
+  margin-top: 16px;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.title mat-icon {
+  color: #d97706;
+}
+
+.explanation {
+  margin: 2px 0 8px 32px;
+  font-size: 13px;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.shortages {
+  margin-left: 32px;
+}
+
+.shortages > li {
+  padding: 8px 0;
+  border-top: 1px solid #f1f5f9;
+}
+
+.materials {
+  margin: 4px 0 0 16px;
+}
+
+.materials li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  padding: 2px 0;
+  font-size: 14px;
+}
+
+.names {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 24px;
+  margin-left: 32px;
+}

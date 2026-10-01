@@ -1,0 +1,45 @@
+@for (group of groups(); track group.reason) {
+  <section class="group">
+    <h3 class="title">
+      <mat-icon>{{ group.icon }}</mat-icon>
+      <span>{{ group.title }} ({{ group.spools.length }})</span>
+    </h3>
+    <p class="muted explanation">{{ group.explanation }}</p>
+
+    @if (group.reason === 'MATERIAL_SHORTAGE') {
+      <ul class="shortages">
+        @for (skipped of group.spools; track $index) {
+          <li>
+            <ng-container *ngTemplateOutlet="spoolName; context: { $implicit: skipped }" />
+            <ul class="materials">
+              @for (shortage of skipped.shortages; track shortage.materialCode) {
+                <li>
+                  <strong>{{ shortage.materialCode }}</strong>
+                  <span class="muted">needs {{ shortage.required }}, {{ shortage.available }} in stock</span>
+                  <span class="status status-short">short {{ shortage.required - shortage.available }}</span>
+                </li>
+              }
+            </ul>
+          </li>
+        }
+      </ul>
+    } @else {
+      <ul class="names">
+        @for (skipped of group.spools; track $index) {
+          <li><ng-container *ngTemplateOutlet="spoolName; context: { $implicit: skipped }" /></li>
+        }
+      </ul>
+    }
+  </section>
+} @empty {
+  <p class="muted">Every spool waiting to be fabricated was included.</p>
+}
+
+<!-- links to the spool, or plain text when the spool was deleted after the batch was generated -->
+<ng-template #spoolName let-skipped>
+  @if (skipped.spoolId !== null) {
+    <a [routerLink]="['/spools', skipped.spoolId]">{{ skipped.isoNo }} / {{ skipped.spoolNo }}</a>
+  } @else {
+    <span>{{ skipped.isoNo }} / {{ skipped.spoolNo }}</span> <span class="muted">(deleted)</span>
+  }
+</ng-template>

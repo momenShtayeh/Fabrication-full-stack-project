@@ -1,0 +1,85 @@
+<div class="page">
+  <a class="back-link" routerLink="/isos"><mat-icon>arrow_back</mat-icon> All ISOs</a>
+
+  @if (iso(); as iso) {
+    <div class="page-header">
+      <h1>ISO {{ iso.isoNo }}</h1>
+      @if (auth.canEdit()) {
+        <div class="actions">
+          <button mat-stroked-button (click)="editIso(iso)"><mat-icon>edit</mat-icon> Edit</button>
+          <button mat-stroked-button (click)="deleteIso(iso)"><mat-icon>delete</mat-icon> Delete</button>
+        </div>
+      }
+    </div>
+
+    <dl class="details">
+      <div><dt>ISO number</dt><dd>{{ iso.isoNo }}</dd></div>
+      <div><dt>Revision</dt><dd>{{ iso.revision }}</dd></div>
+      <div><dt>Status</dt><dd><app-status-badge [status]="iso.status" /></dd></div>
+      <div><dt>Spools</dt><dd>{{ spools.page()?.totalElements ?? '–' }}</dd></div>
+    </dl>
+
+    <div class="page-header">
+      <h2>Spools</h2>
+      @if (auth.canEdit()) {
+        <div class="actions">
+          <button mat-flat-button (click)="addSpool(iso)"><mat-icon>add</mat-icon> Add spool</button>
+        </div>
+      }
+    </div>
+
+    <div class="table-card">
+      @if (spools.loading()) {
+        <mat-progress-bar mode="indeterminate" />
+      }
+      <div class="table-scroll">
+        <table mat-table [dataSource]="spools.page()?.content ?? []"
+               matSort matSortActive="spoolNo" matSortDirection="asc" matSortDisableClear
+               (matSortChange)="spools.changeSort($event)">
+          <ng-container matColumnDef="spoolNo">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Spool number</th>
+            <td mat-cell *matCellDef="let spool"><strong>{{ spool.spoolNo }}</strong></td>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+            <td mat-cell *matCellDef="let spool"><app-status-badge [status]="spool.status" /></td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let spool" class="actions-cell" (click)="$event.stopPropagation()">
+              <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Spool actions">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menu="matMenu">
+                <button mat-menu-item (click)="editSpool(iso, spool)">
+                  <mat-icon>edit</mat-icon> Rename
+                </button>
+                <!-- a batched spool's stock was already deducted, the backend refuses to delete it -->
+                <button mat-menu-item (click)="deleteSpool(spool)" [disabled]="spool.status === 'BATCHED'">
+                  <mat-icon>delete</mat-icon> Delete
+                </button>
+              </mat-menu>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="columns()"></tr>
+          <tr mat-row *matRowDef="let spool; columns: columns()" class="clickable" (click)="openSpool(spool)"></tr>
+        </table>
+      </div>
+
+      @if (spools.page()?.totalElements === 0) {
+        <p class="empty-state">This ISO has no spools yet.</p>
+      }
+
+      <mat-paginator [length]="spools.page()?.totalElements ?? 0"
+                     [pageIndex]="spools.request.page"
+                     [pageSize]="spools.request.size"
+                     [pageSizeOptions]="[10, 20, 50]"
+                     (page)="spools.changePage($event)" />
+    </div>
+  } @else {
+    <mat-progress-bar mode="indeterminate" />
+  }
+</div>
